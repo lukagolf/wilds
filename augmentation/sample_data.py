@@ -1,6 +1,8 @@
 import random
 import os
 
+DIR_NAME = 'data1500'
+
 def calculate_sample_sizes(train_sample_size, proportions):
     """
     Calculate sample sizes for other datasets based on the proportion and training dataset sample size.
@@ -12,7 +14,7 @@ def sample_from_file(input_path, output_path, sample_size, sample_indices=None):
     """
     Sample lines from a file based on sample_indices or a given sample_size.
     """
-    with open(input_path, 'r') as file:
+    with open(input_path, 'r', encoding="utf8") as file:
         lines = file.readlines()
 
     if sample_indices is None:
@@ -20,7 +22,7 @@ def sample_from_file(input_path, output_path, sample_size, sample_indices=None):
 
     sampled_lines = [lines[i].rstrip('\n') for i in sample_indices]
 
-    with open(output_path, 'w') as output_file:
+    with open(output_path, 'w', encoding="utf8") as output_file:
         output_file.write('\n'.join(sampled_lines))
 
     return sample_indices
@@ -54,26 +56,26 @@ proportions = {
 }
 
 other_datasets_paths = {
-    'OODval': ('data/py150_v1.0/raw/OODval.txt', 'data500/py150_v1.0/raw/OODval.txt'),
-    'OODtest': ('data/py150_v1.0/raw/OODtest.txt', 'data500/py150_v1.0/raw/OODtest.txt'),
-    'IDval': ('data/py150_v1.0/raw/IDval.txt', 'data500/py150_v1.0/raw/IDval.txt'),
-    'IDtest': ('data/py150_v1.0/raw/IDtest.txt', 'data500/py150_v1.0/raw/IDtest.txt')
+    'OODval': ('data/py150_v1.0/raw/OODval.txt', f'{DIR_NAME}/py150_v1.0/raw/OODval.txt'),
+    'OODtest': ('data/py150_v1.0/raw/OODtest.txt', f'{DIR_NAME}/py150_v1.0/raw/OODtest.txt'),
+    'IDval': ('data/py150_v1.0/raw/IDval.txt', f'{DIR_NAME}/py150_v1.0/raw/IDval.txt'),
+    'IDtest': ('data/py150_v1.0/raw/IDtest.txt', f'{DIR_NAME}/py150_v1.0/raw/IDtest.txt')
 }
 
 other_metadata_paths = {
-    'OODval': ('data/py150_v1.0/metadata/repo_file_names/OODval.txt', 'data500/py150_v1.0/metadata/repo_file_names/OODval.txt'),
-    'OODtest': ('data/py150_v1.0/metadata/repo_file_names/OODtest.txt', 'data500/py150_v1.0/metadata/repo_file_names/OODtest.txt'),
-    'IDval': ('data/py150_v1.0/metadata/repo_file_names/IDval.txt', 'data500/py150_v1.0/metadata/repo_file_names/IDval.txt'),
-    'IDtest': ('data/py150_v1.0/metadata/repo_file_names/IDtest.txt', 'data500/py150_v1.0/metadata/repo_file_names/IDtest.txt')
+    'OODval': ('data/py150_v1.0/metadata/repo_file_names/OODval.txt', f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/OODval.txt'),
+    'OODtest': ('data/py150_v1.0/metadata/repo_file_names/OODtest.txt', f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/OODtest.txt'),
+    'IDval': ('data/py150_v1.0/metadata/repo_file_names/IDval.txt', f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/IDval.txt'),
+    'IDtest': ('data/py150_v1.0/metadata/repo_file_names/IDtest.txt', f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/IDtest.txt')
 }
 
 # Sample the snippets
 sample_snippets(
     raw_file_path='data/py150_v1.0/raw/train.txt',
     meta_file_path='data/py150_v1.0/metadata/repo_file_names/train.txt',
-    output_raw_path='data500/py150_v1.0/raw/train.txt',
-    output_meta_path='data500/py150_v1.0/metadata/repo_file_names/train.txt',
-    sample_size=500,
+    output_raw_path=f'{DIR_NAME}/py150_v1.0/raw/train.txt',
+    output_meta_path=f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/train.txt',
+    sample_size=1500,
     other_datasets_paths=other_datasets_paths,
     other_metadata_paths=other_metadata_paths
 )

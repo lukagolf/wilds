@@ -1,7 +1,9 @@
 import os
-from augmentation.generate_refactoring import *
+from generate_refactoring import *
 import shutil
 
+DATA_DIR = 'data1500'
+AUG_DIR = 'data1500-aug1'
 def format_python_code(snippet):
     formatted_code = snippet.replace(" <EOL>", "\n")
     formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
@@ -76,9 +78,9 @@ def copy_file(source_path, destination_path):
 # combined_file = 'data-aug/py150_v1.0/raw/train.txt'
 
 # Augment the 500 set `data500/py150_v1.0/raw/train.txt`
-input_file = 'data500/py150_v1.0/raw/train.txt'
-output_file = 'data500-aug/py150_v1.0/raw/train-aug.txt'
-combined_file = 'data500-aug/py150_v1.0/raw/train.txt'
+input_file = f'{DATA_DIR}/py150_v1.0/raw/train.txt'
+output_file = f'{AUG_DIR}/py150_v1.0/raw/train-aug.txt'
+combined_file = f'{AUG_DIR}/py150_v1.0/raw/train.txt'
 
 process_file(input_file, output_file, combined_file)
 
@@ -89,21 +91,21 @@ process_file(input_file, output_file, combined_file)
 # output_meta_path = 'data-aug/py150_v1.0/metadata/repo_file_names/train.txt'
 
 # Duplicate the 500 set metadata `data500/py150_v1.0/metadata/repo_file_names/train.txt`
-meta_file_path = 'data500/py150_v1.0/metadata/repo_file_names/train.txt'
-output_meta_path = 'data500-aug/py150_v1.0/metadata/repo_file_names/train.txt'
+meta_file_path = f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
+output_meta_path = f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
 
 duplicate_meta_content(meta_file_path, output_meta_path)
 
 ######################## Copy the additional dataset files ####################
 datasets_to_copy = {
-    'data500/py150_v1.0/raw/OODval.txt': 'data500-aug/py150_v1.0/raw/OODval.txt',
-    'data500/py150_v1.0/raw/OODtest.txt': 'data500-aug/py150_v1.0/raw/OODtest.txt',
-    'data500/py150_v1.0/raw/IDval.txt': 'data500-aug/py150_v1.0/raw/IDval.txt',
-    'data500/py150_v1.0/raw/IDtest.txt': 'data500-aug/py150_v1.0/raw/IDtest.txt',
-    'data500/py150_v1.0/metadata/repo_file_names/OODval.txt': 'data500-aug/py150_v1.0/metadata/repo_file_names/OODval.txt',
-    'data500/py150_v1.0/metadata/repo_file_names/OODtest.txt': 'data500-aug/py150_v1.0/metadata/repo_file_names/OODtest.txt',
-    'data500/py150_v1.0/metadata/repo_file_names/IDval.txt': 'data500-aug/py150_v1.0/metadata/repo_file_names/IDval.txt',
-    'data500/py150_v1.0/metadata/repo_file_names/IDtest.txt': 'data500-aug/py150_v1.0/metadata/repo_file_names/IDtest.txt'
+    f'{DATA_DIR}/py150_v1.0/raw/OODval.txt': f'{AUG_DIR}/py150_v1.0/raw/OODval.txt',
+    f'{DATA_DIR}/py150_v1.0/raw/OODtest.txt': f'{AUG_DIR}/py150_v1.0/raw/OODtest.txt',
+    f'{DATA_DIR}/py150_v1.0/raw/IDval.txt': f'{AUG_DIR}/py150_v1.0/raw/IDval.txt',
+    f'{DATA_DIR}/py150_v1.0/raw/IDtest.txt': f'{AUG_DIR}/py150_v1.0/raw/IDtest.txt',
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt',
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt',
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt',
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt'
 }
 
 for input_path, output_path in datasets_to_copy.items():

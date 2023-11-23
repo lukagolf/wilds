@@ -305,7 +305,7 @@ def get_pred_prefix(dataset, config):
     replicate_str = get_replicate_str(dataset, config)
     prefix = os.path.join(
         config.log_dir,
-        f"{dataset_name}_split:{split}_{replicate_str}_")
+        f"{dataset_name}_split_{split}_{replicate_str}_")
     return prefix
 
 def get_model_prefix(dataset, config):
