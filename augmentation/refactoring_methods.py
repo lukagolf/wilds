@@ -14,11 +14,15 @@ def rename_local_variable(method_string):
     Returns:
     - str: The method string with a local variable renamed.
     """
+    method_string = method_string.lstrip()
     local_var_list = extract_local_variable(method_string)
     if len(local_var_list) == 0:
         return method_string
 
     mutation_index = random.randint(0, len(local_var_list) - 1)
+    # if isinstance(new_argument, tuple):
+    #     new_argument = new_argument[1]
+    #     new_argument_str = ' '.join(new_argument)
     return method_string.replace(local_var_list[mutation_index], word_synonym_replacement(local_var_list[mutation_index])[0])
 
 
@@ -75,10 +79,8 @@ def duplication(method_string):
         var_definition = match_ret.group()[:-1]
         new_var_definition = var_definition
         method_string = method_string.replace(var_definition, var_definition + new_var_definition)
-        # print(method_string)
         return method_string
     else:
-        # print(method_string)
         return method_string
 
 
@@ -135,7 +137,12 @@ def rename_argument(method_string):
         return method_string
 
     mutation_index = random.randint(0, len(arguments_list) - 1)
-    return method_string.replace(arguments_list[mutation_index], word_synonym_replacement(arguments_list[mutation_index]))
+    new_arg = word_synonym_replacement(arguments_list[mutation_index])
+    if isinstance(new_arg, tuple):
+        new_arg = new_arg[0]
+    # return method_string.replace(arguments_list[mutation_index], word_synonym_replacement(arguments_list[mutation_index]))
+    return method_string.replace(arguments_list[mutation_index], new_arg)
+
 
 
 def return_optimal(method_string):
@@ -282,7 +289,13 @@ def add_argumemts(method_string):
     mutation_index = random.randint(0, len(arguments_list) - 1)
     org_argument = arguments_list[mutation_index]
     new_argument = word_synonym_replacement(arguments_list[mutation_index])
-    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument)
+    # Because word_synonym_replacement only sometimes returns a tuple
+    new_argument_str = new_argument
+    if isinstance(new_argument, tuple):
+        new_argument = new_argument[1]
+        new_argument_str = ' '.join(new_argument)
+
+    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument_str)
     method_string = method_string.replace(arguments_info, new_arguments_info, 1)
     return method_string
 
@@ -470,7 +483,6 @@ def dead_branch_while(data):
         new_statement += ' '
     new_statement += get_branch_while_mutant()
     method_string = data.replace(statement, '\n' + new_statement + '\n' + statement)
-    # print(method_string)
     return method_string
 
 
@@ -535,3 +547,18 @@ if __name__ == '__main__':
     mutated_code = apply_plus_zero_math(candidate_code)
     print(candidate_code)
     print(mutated_code)
+
+# snippet = """<s> import mock <EOL> from oslo_config import cfg <EOL> import testtools <EOL> from neutron . plugins . ml2 . drivers . linuxbridge . agent import linuxbridge_neutron_agent <EOL> from neutron . tests . functional . agent . linux import test_ip_lib <EOL> lba = linuxbridge_neutron_agent <EOL> class LinuxBridgeAgentTests ( test_ip_lib . IpLibTestFramework ) : <EOL> def setUp ( self ) : <EOL> super ( LinuxBridgeAgentTests , self ) . setUp ( ) <EOL> agent_rpc = ( '' ) <EOL> mock . patch ( agent_rpc ) . start ( ) <EOL> mock . patch ( '' ) . start ( ) <EOL> cfg . CONF . set_override ( 'enable_vxlan' , False , 'VXLAN' ) <EOL> def test_validate_interface_mappings ( self ) : <EOL> mappings = { 'physnet1' : 'int1' , 'physnet2' : 'int2' } <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'int1' ) ) <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'int2' ) ) <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> def test_validate_bridge_mappings ( self ) : <EOL> mappings = { 'physnet1' : 'br-eth1' } <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( mappings , { } ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'br-eth1' ) ) <EOL> lba . LinuxBridgeManager ( mappings , { } ) </s>"""
+# formatted_code = snippet.replace(" <EOL>", "\n")
+# formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
+# print("Outside of rename local variable, it's:\n", formatted_code)
+# print("ORIGINAL:\n", snippet)
+# print('#################################')
+# print("FORMATED SNIPPET:\n", formatted_code)
+# print('#################################')
+# augmented_code = rename_local_variable(formatted_code)
+# print("AUGMENTED SNIPPET:\n", augmented_code)
+# reformated_code = augmented_code.replace("\n", " <EOL>")
+# reformated_code = f"<s> {reformated_code} </s>"
+# print('#################################')
+# print("REFORMATED CODE:\n", reformated_code)

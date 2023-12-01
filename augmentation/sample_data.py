@@ -1,7 +1,7 @@
 import random
 import os
 
-DIR_NAME = 'data1500'
+DIR_NAME = 'data10'
 
 def calculate_sample_sizes(train_sample_size, proportions):
     """
@@ -75,7 +75,7 @@ sample_snippets(
     meta_file_path='data/py150_v1.0/metadata/repo_file_names/train.txt',
     output_raw_path=f'{DIR_NAME}/py150_v1.0/raw/train.txt',
     output_meta_path=f'{DIR_NAME}/py150_v1.0/metadata/repo_file_names/train.txt',
-    sample_size=1500,
+    sample_size=10,
     other_datasets_paths=other_datasets_paths,
     other_metadata_paths=other_metadata_paths
 )

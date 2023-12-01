@@ -2,8 +2,8 @@ import os
 from generate_refactoring import *
 import shutil
 
-DATA_DIR = 'data1500'
-AUG_DIR = 'data1500-aug1'
+DATA_DIR = 'data500'
+AUG_DIR = 'data500-aug'
 def format_python_code(snippet):
     formatted_code = snippet.replace(" <EOL>", "\n")
     formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
@@ -27,10 +27,27 @@ def process_file(input_file_path, output_file_path, combined_file_path, k=1):
 
     new_content = []
 
+    refactoring_counts = {refactor.__name__: 0 for refactor in [
+                            rename_argument, 
+                            return_optimal, 
+                            add_argumemts,
+                            rename_api, 
+                            rename_local_variable,
+                            add_local_variable,
+                            rename_method_name,
+                            enhance_if,
+                            add_print,
+                            duplication,
+                            apply_plus_zero_math,
+                            dead_branch_if_else,
+                            dead_branch_if,
+                            dead_branch_while,
+                            dead_branch_for
+                            ]}
     for snippet in content:
         if '<s>' in snippet:
             formatted_code = format_python_code(snippet)
-            refactored_code = generate_adversarial_file_level(k, formatted_code)
+            refactored_code = generate_adversarial_file_level(k, formatted_code, refactoring_counts)
             original_style_code = reformat_to_original_style(refactored_code)
             new_content.append(original_style_code)
 
@@ -44,6 +61,8 @@ def process_file(input_file_path, output_file_path, combined_file_path, k=1):
 
         with open(output_file_path, 'r') as new_file:
             combined_file.write(new_file.read())
+
+    print("Refactoring Counts: ", refactoring_counts)
 
 def duplicate_meta_content(meta_file_path, output_meta_path):
     # Ensure the output directory exists
@@ -110,3 +129,32 @@ datasets_to_copy = {
 
 for input_path, output_path in datasets_to_copy.items():
     copy_file(input_path, output_path)
+
+
+'''
+STATS:
+Always works:
+rename_api
+rename_argument
+return_optimal
+rename_method_name
+all dead branch augs
+
+Almost always / Usually works:
+add_print(like 97%)
+add_arguments (97.8%)
+
+
+Works about half the time:
+duplication
+rename_local_variable
+add_local_variable
+enhance_if
+apply_plus_zero_math
+
+Seldom works:
+
+Never works:
+
+
+'''

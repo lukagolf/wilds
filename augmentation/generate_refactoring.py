@@ -102,7 +102,7 @@ def generate_adversarial(k, code, method_names):
     return new_refactored_code
 
 
-def generate_adversarial_json(k, code):
+def generate_adversarial_json(k, code, refactoring_counts):
     """
     Generate a list of refactored code snippets by applying k different refactoring methods.
 
@@ -145,7 +145,7 @@ def generate_adversarial_json(k, code):
                               dead_branch_if,
                               dead_branch_while,
                               dead_branch_for,
-                              # dead_branch_switch
+                              dead_branch_switch
                               ]  
             vv = 0
             while new_rf == new_refactored_code and vv <= 20:
@@ -154,7 +154,7 @@ def generate_adversarial_json(k, code):
                     refactor = random.choice(refactors_list)
                     print('*' * 50, refactor, '*' * 50)
                     new_refactored_code = refactor(new_refactored_code)
-
+                    refactoring_counts[refactor_name] = refactoring_counts.get(refactor_name, 0) + 1
                 except Exception as error:
                     print('error:\t', error)
 
@@ -165,7 +165,7 @@ def generate_adversarial_json(k, code):
     return refac
 
 
-def generate_adversarial_file_level(k, code):
+def generate_adversarial_file_level(k, code, refactoring_counts):
     """
     Apply k refactoring operations to the entire file-level code, potentially altering the overall structure.
 
@@ -203,12 +203,14 @@ def generate_adversarial_file_level(k, code):
                             dead_branch_for
                             ]  
         vv = 0
-        while new_rf == new_refactored_code and vv <= 20:
+        while new_rf == new_refactored_code and vv < 1:
             try:
                 vv += 1
                 refactor = random.choice(refactors_list)
                 print('*' * 50, refactor, '*' * 50)
                 new_refactored_code = refactor(new_refactored_code)
+                refactor_name = refactor.__name__
+                refactoring_counts[refactor_name] = refactoring_counts.get(refactor_name, 0) + 1
             except Exception as error:
                 print('error:\t', error)
         new_rf = new_refactored_code
