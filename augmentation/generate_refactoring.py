@@ -187,20 +187,20 @@ def generate_adversarial_file_level(k, code, refactoring_counts):
     for t in range(k):
         refactors_list = [
                             rename_argument, 
-                            return_optimal, 
-                            add_argumemts,
-                            rename_api, 
-                            rename_local_variable,
-                            add_local_variable,
-                            rename_method_name,
-                            enhance_if,
-                            add_print,
-                            duplication,
-                            apply_plus_zero_math,
-                            dead_branch_if_else,
-                            dead_branch_if,
-                            dead_branch_while,
-                            dead_branch_for
+                            # return_optimal, 
+                            # add_argumemts,
+                            # rename_api, 
+                            # rename_local_variable,
+                            # add_local_variable,
+                            # rename_method_name,
+                            # enhance_if,
+                            # add_print,
+                            # duplication,
+                            # apply_plus_zero_math,
+                            # dead_branch_if_else,
+                            # dead_branch_if,
+                            # dead_branch_while,
+                            # dead_branch_for
                             ]  
         vv = 0
         while new_rf == new_refactored_code and vv < 1:

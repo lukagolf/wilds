@@ -547,18 +547,3 @@ if __name__ == '__main__':
     mutated_code = apply_plus_zero_math(candidate_code)
     print(candidate_code)
     print(mutated_code)
-
-# snippet = """<s> import mock <EOL> from oslo_config import cfg <EOL> import testtools <EOL> from neutron . plugins . ml2 . drivers . linuxbridge . agent import linuxbridge_neutron_agent <EOL> from neutron . tests . functional . agent . linux import test_ip_lib <EOL> lba = linuxbridge_neutron_agent <EOL> class LinuxBridgeAgentTests ( test_ip_lib . IpLibTestFramework ) : <EOL> def setUp ( self ) : <EOL> super ( LinuxBridgeAgentTests , self ) . setUp ( ) <EOL> agent_rpc = ( '' ) <EOL> mock . patch ( agent_rpc ) . start ( ) <EOL> mock . patch ( '' ) . start ( ) <EOL> cfg . CONF . set_override ( 'enable_vxlan' , False , 'VXLAN' ) <EOL> def test_validate_interface_mappings ( self ) : <EOL> mappings = { 'physnet1' : 'int1' , 'physnet2' : 'int2' } <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'int1' ) ) <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'int2' ) ) <EOL> lba . LinuxBridgeManager ( { } , mappings ) <EOL> def test_validate_bridge_mappings ( self ) : <EOL> mappings = { 'physnet1' : 'br-eth1' } <EOL> with testtools . ExpectedException ( SystemExit ) : <EOL> lba . LinuxBridgeManager ( mappings , { } ) <EOL> self . manage_device ( <EOL> self . generate_device_details ( ) . _replace ( namespace = None , <EOL> name = 'br-eth1' ) ) <EOL> lba . LinuxBridgeManager ( mappings , { } ) </s>"""
-# formatted_code = snippet.replace(" <EOL>", "\n")
-# formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
-# print("Outside of rename local variable, it's:\n", formatted_code)
-# print("ORIGINAL:\n", snippet)
-# print('#################################')
-# print("FORMATED SNIPPET:\n", formatted_code)
-# print('#################################')
-# augmented_code = rename_local_variable(formatted_code)
-# print("AUGMENTED SNIPPET:\n", augmented_code)
-# reformated_code = augmented_code.replace("\n", " <EOL>")
-# reformated_code = f"<s> {reformated_code} </s>"
-# print('#################################')
-# print("REFORMATED CODE:\n", reformated_code)
