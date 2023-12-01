@@ -1,9 +1,43 @@
+"""
+Takes version of py150 dataset and outputs an augmented dataset that 
+contains either an original code snippet or its augmented counterpart,
+but not both.
+
+Expects output log directory as command-line argument, to output stats
+on which augmentations were applied.
+"""
+import sys
 import os
-from generate_refactoring import *
 import shutil
+from generate_refactoring import *
+import argparse
+
+# Custom print function to output both to stdout and log file
+def custom_print(*args, **kwargs):
+    # Print to the original stdout (terminal)
+    print(*args, **kwargs, file=original_stdout)
+
+    # Print to the log file
+    print(*args, **kwargs, file=log_file)
+
+# Parsing command line argument for the output directory
+parser = argparse.ArgumentParser(description="Run script and redirect output to specified directory")
+parser.add_argument('output_dir', type=str, help='Directory to save the output logs')
+args = parser.parse_args()
+
+# Create the directory if it does not exist
+output_log_directory = args.output_dir
+os.makedirs(output_log_directory, exist_ok=True)
+
+# Redirect stdout to a file in the specified directory
+original_stdout = sys.stdout  # Save a reference to the original standard output
+log_file_path = os.path.join(output_log_directory, 'aug.log')
+log_file = open(log_file_path, 'w')
+sys.stdout = log_file  # Change the standard output to the file we created
 
 DATA_DIR = 'data500'
 AUG_DIR = 'data500-aug'
+
 def format_python_code(snippet):
     formatted_code = snippet.replace(" <EOL>", "\n")
     formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
@@ -18,7 +52,7 @@ def ensure_directory_exists(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def process_file(input_file_path, output_file_path, combined_file_path, k=1):
+def process_file(input_file_path, output_file_path, combined_file_path, k):
     ensure_directory_exists(output_file_path)
     ensure_directory_exists(combined_file_path)
 
@@ -27,93 +61,88 @@ def process_file(input_file_path, output_file_path, combined_file_path, k=1):
 
     new_content = []
 
-    refactoring_counts = {refactor.__name__: 0 for refactor in [
-                            rename_argument, 
-                            return_optimal, 
-                            add_argumemts,
-                            rename_api, 
-                            rename_local_variable,
-                            add_local_variable,
-                            rename_method_name,
-                            enhance_if,
-                            add_print,
-                            duplication,
-                            apply_plus_zero_math,
-                            dead_branch_if_else,
-                            dead_branch_if,
-                            dead_branch_while,
-                            dead_branch_for
-                            ]}
+    refactors_list = [
+                    rename_argument, 
+                    return_optimal, 
+                    add_argumemts,
+                    rename_api, 
+                    rename_local_variable,
+                    add_local_variable,
+                    rename_method_name,
+                    enhance_if,
+                    add_print,
+                    duplication,
+                    apply_plus_zero_math,
+                    dead_branch_if_else,
+                    dead_branch_if,
+                    dead_branch_while,
+                    dead_branch_for,
+                    ]
+
+    cumulative_refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
+
     for snippet in content:
         if '<s>' in snippet:
             formatted_code = format_python_code(snippet)
-            refactored_code = generate_adversarial_file_level(k, formatted_code, refactoring_counts)
+            refactored_code, refactoring_counts = generate_adversarial_file_level(formatted_code, k)
+            for refactor, count in refactoring_counts.items():
+                cumulative_refactoring_counts[refactor] += count
             original_style_code = reformat_to_original_style(refactored_code)
             new_content.append(original_style_code)
 
-    with open(output_file_path, 'w') as file:
-        file.write('\n'.join(new_content))
+    # Print cumulative refactoring counts after the loop
+    for refactor, count in cumulative_refactoring_counts.items():
+        custom_print(f"{refactor}: Applied {count} times")
 
-    # Combine the original and new files into a third file
+    # Write the new content to the output file
+    with open(output_file_path, 'w') as output_file:
+        output_file.write('\n'.join(new_content))
+
+    # Combine mixture of original and new files into a third file
+    with open(input_file_path, 'r') as input_file:
+        orig_snippets = input_file.read().splitlines()
+    
+    with open(output_file_path, 'r') as new_file:
+        aug_snippets = new_file.read().splitlines()
+
+    mixed_snippets = []
+    for i in range(0, len(orig_snippets)):
+        mixed_snippets.append(orig_snippets[i] if i % 2 == 0 else aug_snippets[i])
+
     with open(combined_file_path, 'w') as combined_file:
-        with open(input_file_path, 'r') as original_file:
-            combined_file.write(original_file.read() + '\n')
+        combined_file.write('\n'.join(mixed_snippets))
 
-        with open(output_file_path, 'r') as new_file:
-            combined_file.write(new_file.read())
 
-    print("Refactoring Counts: ", refactoring_counts)
-
-def duplicate_meta_content(meta_file_path, output_meta_path):
-    # Ensure the output directory exists
-    os.makedirs(os.path.dirname(output_meta_path), exist_ok=True)
-
-    with open(meta_file_path, 'r') as meta_file:
-        meta_lines = meta_file.read().splitlines()
-
-    # Duplicate the contents
-    duplicated_content = meta_lines + meta_lines
-
-    # Write the duplicated content to the output file
-    with open(output_meta_path, 'w') as output_meta:
-        output_meta.write('\n'.join(duplicated_content))
-
-def copy_file(source_path, destination_path):
+def copy_file_or_directory(source, destination):
     """
-    Copy a file from the source path to the destination path.
+    Copy a file or directory from the source path to the destination path.
+    If the destination is a directory and already exists, it will be replaced.
     """
-    ensure_directory_exists(destination_path)
-    shutil.copyfile(source_path, destination_path)
+    ensure_directory_exists(destination)
+    if os.path.isdir(source):
+        # If the destination directory exists, remove it first
+        if os.path.exists(destination):
+            shutil.rmtree(destination)
+        shutil.copytree(source, destination)
+    else:
+        shutil.copyfile(source, destination)
 
 # ATTENTION!!! BE EXTREMELY CAREFUL THAT THE PATHS ARE RIGHT WHEN RUNNING THIS SCRIPT
-# Below are the paths for the full set and the 500 set. If you make a new set,
-# you will need to add the paths. Otherwise, just comment out the ones you don't need.
 
 ######################## Augment snippet files ###############################
 
-# Augment the full set `data/py150_v1.0/raw/train.txt`
-# input_file = 'data/py150_v1.0/raw/train.txt'
-# output_file = 'data-aug/py150_v1.0/raw/train-aug.txt'
-# combined_file = 'data-aug/py150_v1.0/raw/train.txt'
-
-# Augment the 500 set `data500/py150_v1.0/raw/train.txt`
 input_file = f'{DATA_DIR}/py150_v1.0/raw/train.txt'
 output_file = f'{AUG_DIR}/py150_v1.0/raw/train-aug.txt'
 combined_file = f'{AUG_DIR}/py150_v1.0/raw/train.txt'
 
-process_file(input_file, output_file, combined_file)
+process_file(input_file, output_file, combined_file, 1)
 
-######################## Duplicate meta files ###############################
+######################## Transfer meta files ###############################
 
-# Duplicate the full set metadata `data/py150_v1.0/metadata/repo_file_names/train.txt`
-# meta_file_path = 'data/py150_v1.0/metadata/repo_file_names/train.txt'
-# output_meta_path = 'data-aug/py150_v1.0/metadata/repo_file_names/train.txt'
-
-# Duplicate the 500 set metadata `data500/py150_v1.0/metadata/repo_file_names/train.txt`
 meta_file_path = f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
 output_meta_path = f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
 
-duplicate_meta_content(meta_file_path, output_meta_path)
+copy_file_or_directory(meta_file_path, output_meta_path)
 
 ######################## Copy the additional dataset files ####################
 datasets_to_copy = {
@@ -124,37 +153,18 @@ datasets_to_copy = {
     f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt',
     f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt',
     f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt'
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt',
+    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv',
+    # f'{DATA_DIR}/py150_v1.0/script': f'{AUG_DIR}/py150_v1.0/script',
+    f'{DATA_DIR}/py150_v1.0/RELEASE_v1.0.txt': f'{AUG_DIR}/py150_v1.0/RELEASE_v1.0.txt'
 }
 
 for input_path, output_path in datasets_to_copy.items():
-    copy_file(input_path, output_path)
+    copy_file_or_directory(input_path, output_path)
 
+# Close the log file and restore sys.stdout before the final print
+log_file.close()
+sys.stdout = original_stdout
 
-'''
-STATS:
-Always works:
-rename_api
-rename_argument
-return_optimal
-rename_method_name
-all dead branch augs
-
-Almost always / Usually works:
-add_print(like 97%)
-add_arguments (97.8%)
-
-
-Works about half the time:
-duplication
-rename_local_variable
-add_local_variable
-enhance_if
-apply_plus_zero_math
-
-Seldom works:
-
-Never works:
-
-
-'''
+# Use standard print for the final message
+print(f"Script execution completed. Logs are saved in {log_file_path}")
