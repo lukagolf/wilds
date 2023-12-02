@@ -12,6 +12,9 @@ import shutil
 from generate_refactoring import *
 import argparse
 
+DATA_DIR = 'data500'
+AUG_DIR = 'data500-aug'
+
 # Custom print function to output both to stdout and log file
 def custom_print(*args, **kwargs):
     # Print to the original stdout (terminal)
@@ -34,9 +37,6 @@ original_stdout = sys.stdout  # Save a reference to the original standard output
 log_file_path = os.path.join(output_log_directory, 'aug.log')
 log_file = open(log_file_path, 'w')
 sys.stdout = log_file  # Change the standard output to the file we created
-
-DATA_DIR = 'data500'
-AUG_DIR = 'data500-aug'
 
 def format_python_code(snippet):
     formatted_code = snippet.replace(" <EOL>", "\n")
@@ -135,27 +135,15 @@ input_file = f'{DATA_DIR}/py150_v1.0/raw/train.txt'
 output_file = f'{AUG_DIR}/py150_v1.0/raw/train-aug.txt'
 combined_file = f'{AUG_DIR}/py150_v1.0/raw/train.txt'
 
-process_file(input_file, output_file, combined_file, 1)
+process_file(input_file, output_file, combined_file, 3)
 
-######################## Transfer meta files ###############################
-
-meta_file_path = f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
-output_meta_path = f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/train.txt'
-
-copy_file_or_directory(meta_file_path, output_meta_path)
-
-######################## Copy the additional dataset files ####################
+######################## Copy the dataset files ####################
 datasets_to_copy = {
     f'{DATA_DIR}/py150_v1.0/raw/OODval.txt': f'{AUG_DIR}/py150_v1.0/raw/OODval.txt',
     f'{DATA_DIR}/py150_v1.0/raw/OODtest.txt': f'{AUG_DIR}/py150_v1.0/raw/OODtest.txt',
     f'{DATA_DIR}/py150_v1.0/raw/IDval.txt': f'{AUG_DIR}/py150_v1.0/raw/IDval.txt',
     f'{DATA_DIR}/py150_v1.0/raw/IDtest.txt': f'{AUG_DIR}/py150_v1.0/raw/IDtest.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODval.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/OODtest.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDval.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt',
-    f'{DATA_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv': f'{AUG_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv',
-    # f'{DATA_DIR}/py150_v1.0/script': f'{AUG_DIR}/py150_v1.0/script',
+    f'{DATA_DIR}/py150_v1.0/metadata': f'{AUG_DIR}/py150_v1.0/metadata',
     f'{DATA_DIR}/py150_v1.0/RELEASE_v1.0.txt': f'{AUG_DIR}/py150_v1.0/RELEASE_v1.0.txt'
 }
 
