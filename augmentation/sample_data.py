@@ -2,8 +2,8 @@ import random
 import os
 import shutil
 
-INPUT = 'data'
-OUTPUT = 'data24k'
+INPUT = 'data1500'
+OUTPUT = 'data20'
 
 def calculate_sample_sizes(train_sample_size, proportions):
     """
@@ -93,7 +93,7 @@ sample_snippets(
     meta_file_path=f'{INPUT}/py150_v1.0/metadata/repo_file_names/train.txt',
     output_raw_path=f'{OUTPUT}/py150_v1.0/raw/train.txt',
     output_meta_path=f'{OUTPUT}/py150_v1.0/metadata/repo_file_names/train.txt',
-    sample_size=24000,
+    sample_size=20,
     other_datasets_paths=other_datasets_paths,
     other_metadata_paths=other_metadata_paths
 )

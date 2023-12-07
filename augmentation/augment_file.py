@@ -84,11 +84,13 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
 
     cumulative_refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
 
+    iter = 0
     for snippet in content:
         if '<s>' in snippet:
             formatted_code = format_python_code(snippet)
             cumulative_refactoring_counts_copy = cumulative_refactoring_counts.copy()
             refactored_code, refactoring_counts = generate_adversarial_file_level(formatted_code, k, max_refactor_limit, cumulative_refactoring_counts_copy)
+
             for refactor, count in refactoring_counts.items():
                 cumulative_refactoring_counts[refactor] += count
             original_style_code = reformat_to_original_style(refactored_code)

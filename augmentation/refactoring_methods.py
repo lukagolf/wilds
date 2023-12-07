@@ -120,6 +120,32 @@ def rename_method_name(method_string):
     else:
         return method_string
 
+def create_typo(method_string):
+    """
+    Creates a typo of a variable in the method by swapping two random
+    characters in the middle.
+
+    Parameters:
+    - method_string (str): The string representation of a method's code.
+
+    Returns:
+    - str: The method string with an argument renamed.
+
+    Variations to try:
+        - creating typos in all the arguments
+        - creating typos here AND / OR in method names
+        - creating typos in only the first version of the argument
+    """
+    variables = extract_local_variable(method_string)
+    suitable_vars = [arg for arg in variables if len(arg) >= 4]
+    if len(suitable_vars) == 0:
+        return method_string
+    mutation_index = random.randint(0, len(suitable_vars) - 1)
+    argument = suitable_vars[mutation_index]
+    typo_index = random.randint(1, len(argument) - 2)
+    new_argument = argument[:typo_index] + argument[typo_index + 1] + argument[typo_index] + argument[typo_index + 2:]
+    return method_string.replace(argument, new_argument)
+
 
 def rename_argument(method_string):
     """
@@ -133,6 +159,7 @@ def rename_argument(method_string):
     - str: The method string with an argument renamed.
     """
     arguments_list = extract_argument(method_string)
+    print("arguments_list: ", arguments_list)
     if len(arguments_list) == 0:
         return method_string
 
@@ -269,7 +296,6 @@ def enhance_if(method_string):
         new_if_info = if_info.replace('==', ' is ')
 
     return method_string.replace(if_info, new_if_info)
-
 
 def add_argumemts(method_string):
     """
@@ -525,25 +551,51 @@ def dead_branch_for(data):
     return method_string
 
 
-if __name__ == '__main__':
-    """
-    Main execution block of the script.
+# if __name__ == '__main__':
+#     """
+#     Main execution block of the script.
 
-    Reads a Python source file, applies a refactoring method to the first function
-    in the file, and prints both the original and mutated code to the console.
-    This serves as a demonstration of the script's capabilities when executed as
-    a standalone program.
+#     Reads a Python source file, applies a refactoring method to the first function
+#     in the file, and prints both the original and mutated code to the console.
+#     This serves as a demonstration of the script's capabilities when executed as
+#     a standalone program.
 
-    The filename is hardcoded to 'test.py', which is expected to be in the same
-    directory as this script. The encoding used to open the file is 'ISO-8859-1'.
-    """
-    filename = 'test.py'
-    open_file = open(filename, 'r', encoding='ISO-8859-1')
-    code = open_file.read()
-    Class_list, raw_code = extract_class(code)
-    for class_name in Class_list:
-        function_list, class_name = extract_function_python(class_name)
-    candidate_code = function_list[0]
-    mutated_code = apply_plus_zero_math(candidate_code)
-    #print(candidate_code)
-    #print(mutated_code)
+#     The filename is hardcoded to 'test.py', which is expected to be in the same
+#     directory as this script. The encoding used to open the file is 'ISO-8859-1'.
+#     """
+#     filename = 'test.py'
+#     open_file = open(filename, 'r', encoding='ISO-8859-1')
+#     code = open_file.read()
+#     Class_list, raw_code = extract_class(code)
+#     for class_name in Class_list:
+#         function_list, class_name = extract_function_python(class_name)
+#     candidate_code = function_list[0]
+#     mutated_code = apply_plus_zero_math(candidate_code)
+#     #print(candidate_code)
+#     #print(mutated_code)
+
+def format_python_code(snippet):
+    formatted_code = snippet.replace(" <EOL>", "\n")
+    formatted_code = formatted_code.replace("<s>", "").replace("</s>", "")
+    return formatted_code
+
+def reformat_to_original_style(code):
+    formatted_code = code.replace("\n", " <EOL>")
+    return f"<s> {formatted_code} </s>"
+
+
+original_snippet = """<s> import sys <EOL> import salt <EOL> import yaml <EOL> import salt . client <EOL> from salt . key import Key <EOL> opts = salt . config . master_config ( '' ) <EOL> mymanager = Key ( opts ) <EOL> aws_minion_file = "" <EOL> def load_minion_info ( file_path = aws_minion_file ) : <EOL> mydict = [ ] <EOL> mystr = "no data" <EOL> try : <EOL> minions = yaml . load ( open ( file_path , "r" ) . read ( ) ) <EOL> except Exception , e : <EOL> print "" <EOL> print "Exception: %s" % e <EOL> print "mystr = %s" % mystr <EOL> print "mydict %s" % mydict <EOL> raise <EOL> return minions <EOL> def get_minion_expected ( minion_list , minion_id ) : <EOL> result = False <EOL> for m in minion_list : <EOL> if m . get ( 'minion_id' , 'nobody' ) == minion_id : <EOL> result = True <EOL> break <EOL> return result <EOL> def manage ( miniondata = "" ) : <EOL> minion_id = str ( miniondata . get ( 'id' , 'nobody' ) ) <EOL> minion_list = load_minion_info ( aws_minion_file ) <EOL> result = get_minion_expected ( minion_list , minion_id ) <EOL> if result : <EOL> try : <EOL> accept_key ( minion_id ) <EOL> except Exception , e : <EOL> raise <EOL> return <EOL> def accept_key ( minion_id ) : <EOL> mymanager = Key ( opts ) <EOL> mymanager . accept ( match = minion_id ) <EOL> return <EOL> if __name__ == "__main__" : <EOL> minion_id = None <EOL> if len ( sys . argv ) > 1 : <EOL> minion_id = sys . argv [ 1 ] <EOL> if minion_id : <EOL> test_manage ( minion_id ) <EOL> print "" <EOL> minions = get_current_minions ( ) <EOL> print ( ", " ) . join ( minions ) </s>"""
+print("ORIGINAL SNIPPET:\n", original_snippet)
+formatted_snippet = format_python_code(original_snippet)
+formatted_snippet_printable = formatted_snippet.split('\n')
+print("FORMATTED SNIPPET:\n")
+i = 1
+for line in formatted_snippet_printable:
+    print(i, ": ", line)
+    i += 1
+print("##############################################")
+augmented_snippet = create_typo(formatted_snippet)
+print("AUGMENTED SNIPPET:\n", augmented_snippet)
+print("##############################################")
+new_snipppet = reformat_to_original_style(augmented_snippet)
+print("REFORMATTED SNIPPET (AUG):\n", new_snipppet)

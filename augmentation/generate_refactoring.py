@@ -63,21 +63,21 @@ def generate_adversarial(k, code, method_names):
         new_rf = code
         new_refactored_code = code
         for t in range(k):
-            refactors_list = [rename_argument,
-                                return_optimal,
-                                add_argumemts,
-                                rename_api,
-                                rename_local_variable,
+            refactors_list = [# rename_argument,
+                                # return_optimal,
+                                # add_argumemts,
+                                # rename_api,
+                                # rename_local_variable,
                                 add_local_variable,
-                                rename_method_name,
-                                enhance_if,
-                                add_print,
-                                duplication,
-                                apply_plus_zero_math,
-                                dead_branch_if_else,
-                                dead_branch_if,
-                                dead_branch_while,
-                                dead_branch_for,
+                                # rename_method_name,
+                                # enhance_if,
+                                # add_print,
+                                # duplication,
+                                # apply_plus_zero_math,
+                                # dead_branch_if_else,
+                                # dead_branch_if,
+                                # dead_branch_while,
+                                # dead_branch_for,
                                 # dead_branch_switch
                                 ]#
             vv = 0
@@ -93,7 +93,7 @@ def generate_adversarial(k, code, method_names):
 
             new_rf = new_refactored_code
             print('----------------------------OUT of WHILE----------------------------------', vv)
-            print('----------------------------CHANGED THJIS TIME:----------------------------------', vv)
+            print('----------------------------CHANGED THIS TIME:----------------------------------', vv)
         refac.append(new_refactored_code)
     code_body = raw_code.strip() + ' ' + class_name.strip()
     for i in range(len(refac)):
@@ -164,8 +164,8 @@ def generate_adversarial_json(k, code):
     print("refactoring finished")
     return refac
 
-
 def generate_adversarial_file_level(code, k, max_refactor_limit, cumulative, verbose=False):
+
     """
     Apply k refactoring operations to the entire file-level code, potentially altering the overall structure.
 
@@ -180,21 +180,22 @@ def generate_adversarial_file_level(code, k, max_refactor_limit, cumulative, ver
         tuple: A tuple containing the refactored code at the file level and a dictionary of refactoring counts.
     """
     refactors_list = [
-                        rename_argument, 
-                        return_optimal, 
-                        add_argumemts,
-                        rename_api, 
-                        rename_local_variable,
-                        add_local_variable,
-                        rename_method_name,
-                        enhance_if,
-                        add_print,
+                        # rename_argument, 
+                        # return_optimal, 
+                        # add_argumemts,
+                        # rename_api, 
+                        # rename_local_variable,
+                        # add_local_variable,
+                        # rename_method_name,
+                        # enhance_if,
+                        # add_print,
                         duplication,
-                        apply_plus_zero_math,
-                        dead_branch_if_else,
-                        dead_branch_if,
-                        dead_branch_while,
-                        dead_branch_for,
+                        # create_typo,
+                        # apply_plus_zero_math,
+                        # dead_branch_if_else,
+                        # dead_branch_if,
+                        # dead_branch_while,
+                        # dead_branch_for,
                         ]
     
     new_refactored_code = code
@@ -225,6 +226,7 @@ def generate_adversarial_file_level(code, k, max_refactor_limit, cumulative, ver
             except Exception as error:
                 if verbose:
                     print(f'Error applying {refactor.__name__}:\t{error}')
+                print('Failed for snippet #', iter)
 
                 # Prepare a shuffled list of alternative refactors
                 alternatives = [rf for rf in available_refactors if rf != refactor]
