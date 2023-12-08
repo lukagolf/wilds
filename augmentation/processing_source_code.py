@@ -261,21 +261,6 @@ def convert_to_python3(line):
         new_line = "print(" + parts[1].rstrip() + ")"
     return new_line
 
-# def preprocess_source(source):
-#     lines = source.split('\n')
-#     num_indents = 0
-#     processed_lines = []
-#     for line in lines:
-#         if len(line) == 0:
-#             continue
-#         last_char = line.rsplit()[-1]
-#         processed_lines.append(fix_whitespace(line, num_indents))
-#         if last_char == ":":
-#             num_indents = num_indents + 1
-#         if "return" in line:
-#             num_indents = num_indents - 1
-#     return '\n'.join(processed_lines)
-
 def preprocess_source(source):
     ifstack = []
     trystack = []
