@@ -14,7 +14,6 @@ def rename_local_variable(method_string):
     Returns:
     - str: The method string with a local variable renamed.
     """
-    method_string = method_string.lstrip()
     local_var_list = extract_local_variable(method_string)
     if len(local_var_list) == 0:
         return method_string
