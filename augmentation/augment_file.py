@@ -12,12 +12,11 @@ import shutil
 from generate_refactoring import *
 import argparse
 
-DATA_DIR = 'data1500'
-AUG_DIR = 'data1500-aug'
+DATA_DIR = 'data20'
+AUG_DIR = 'data20-aug'
 SIZE = 1500
-NUM_AUGS = 15
-# PERCENT = 0.06667
-max_refactor_limit = (SIZE / 2) / NUM_AUGS
+PERCENT = 0.075
+max_refactor_limit = (SIZE / 2) * PERCENT
 
 # Custom print function to output both to stdout and log file
 def custom_print(*args, **kwargs):
@@ -86,10 +85,8 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
 
     cumulative_refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
 
+    # Apply augmentations to half of the snippets
     midpoint = len(content) // 2
-    for snippet in content[:midpoint]:
-        new_content.append(snippet.lstrip() + '</s>')
-
     for snippet in content[midpoint:]:
         if '<s>' in snippet:
             formatted_code = format_python_code(snippet)
@@ -121,10 +118,17 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
     with open(output_file_path, 'r') as new_file:
         aug_snippets = new_file.read().splitlines()
 
+    # Holds snippets for combined train.txt file
     mixed_snippets = []
-    midpoint = len(orig_snippets) // 2
-    for i in range(0, len(orig_snippets)):
-        mixed_snippets.append(orig_snippets[i] if i < midpoint else aug_snippets[i])
+
+    # Add in non-augmented half
+    for i in range(0, midpoint):
+        mixed_snippets.append(orig_snippets[i])
+
+    # Add in augmented half; must all come after the original snippets
+    # so snippets align with corresponding git repo in metadata file
+    for i in range(0, midpoint):
+        mixed_snippets.append(aug_snippets[i])
 
     with open(combined_file_path, 'w') as combined_file:
         combined_file.write('\n'.join(mixed_snippets))
