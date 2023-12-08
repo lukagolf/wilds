@@ -15,8 +15,9 @@ import argparse
 DATA_DIR = 'data1500'
 AUG_DIR = 'data1500-aug'
 SIZE = 1500
-PERCENT = 0.075
-max_refactor_limit = int(PERCENT * SIZE)
+NUM_AUGS = 15
+# PERCENT = 0.06667
+max_refactor_limit = (SIZE / 2) / NUM_AUGS
 
 # Custom print function to output both to stdout and log file
 def custom_print(*args, **kwargs):
@@ -75,6 +76,7 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
                     enhance_if,
                     add_print,
                     duplication,
+                    create_typo,
                     apply_plus_zero_math,
                     dead_branch_if_else,
                     dead_branch_if,
@@ -84,8 +86,11 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
 
     cumulative_refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
 
-    iter = 0
-    for snippet in content:
+    midpoint = len(content) // 2
+    for snippet in content[:midpoint]:
+        new_content.append(snippet.lstrip() + '</s>')
+
+    for snippet in content[midpoint:]:
         if '<s>' in snippet:
             formatted_code = format_python_code(snippet)
             cumulative_refactoring_counts_copy = cumulative_refactoring_counts.copy()
@@ -117,8 +122,9 @@ def process_file(input_file_path, output_file_path, combined_file_path, k):
         aug_snippets = new_file.read().splitlines()
 
     mixed_snippets = []
+    midpoint = len(orig_snippets) // 2
     for i in range(0, len(orig_snippets)):
-        mixed_snippets.append(orig_snippets[i] if i % 2 == 0 else aug_snippets[i])
+        mixed_snippets.append(orig_snippets[i] if i < midpoint else aug_snippets[i])
 
     with open(combined_file_path, 'w') as combined_file:
         combined_file.write('\n'.join(mixed_snippets))
