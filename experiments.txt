@@ -1,0 +1,4 @@
+Validation Acc/Acc (Class-Method) -> Test OOD Method/class Acc
+Acc Overall -> Test OOD All Acc
+acc_all -> Test ID Method/Class Acc
+Acc (builtin) -> Test ID All Acc
