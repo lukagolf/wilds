@@ -19,9 +19,6 @@ def rename_local_variable(method_string):
         return method_string
 
     mutation_index = random.randint(0, len(local_var_list) - 1)
-    # if isinstance(new_argument, tuple):
-    #     new_argument = new_argument[1]
-    #     new_argument_str = ' '.join(new_argument)
     return method_string.replace(local_var_list[mutation_index], word_synonym_replacement(local_var_list[mutation_index])[0])
 
 
@@ -78,8 +75,10 @@ def duplication(method_string):
         var_definition = match_ret.group()[:-1]
         new_var_definition = var_definition
         method_string = method_string.replace(var_definition, var_definition + new_var_definition)
+        # print(method_string)
         return method_string
     else:
+        # print(method_string)
         return method_string
 
 
@@ -119,27 +118,6 @@ def rename_method_name(method_string):
     else:
         return method_string
 
-def create_typo(method_string):
-    """
-    Creates a typo of a variable in the method by swapping two random
-    characters in the middle.
-
-    Parameters:
-    - method_string (str): The string representation of a method's code.
-
-    Returns:
-    - str: The method string with an argument renamed.
-    """
-    variables = extract_local_variable(method_string)
-    suitable_vars = [arg for arg in variables if len(arg) >= 4]
-    if len(suitable_vars) == 0:
-        return method_string
-    mutation_index = random.randint(0, len(suitable_vars) - 1)
-    argument = suitable_vars[mutation_index]
-    typo_index = random.randint(1, len(argument) - 2)
-    new_argument = argument[:typo_index] + argument[typo_index + 1] + argument[typo_index] + argument[typo_index + 2:]
-    return method_string.replace(argument, new_argument)
-
 
 def rename_argument(method_string):
     """
@@ -157,12 +135,7 @@ def rename_argument(method_string):
         return method_string
 
     mutation_index = random.randint(0, len(arguments_list) - 1)
-    new_arg = word_synonym_replacement(arguments_list[mutation_index])
-    if isinstance(new_arg, tuple):
-        new_arg = new_arg[0]
-    # return method_string.replace(arguments_list[mutation_index], word_synonym_replacement(arguments_list[mutation_index]))
-    return method_string.replace(arguments_list[mutation_index], new_arg)
-
+    return method_string.replace(arguments_list[mutation_index], word_synonym_replacement(arguments_list[mutation_index]))
 
 
 def return_optimal(method_string):
@@ -290,6 +263,7 @@ def enhance_if(method_string):
 
     return method_string.replace(if_info, new_if_info)
 
+
 def add_argumemts(method_string):
     """
     Adds additional arguments to the method's signature using synonyms of existing arguments.
@@ -308,13 +282,7 @@ def add_argumemts(method_string):
     mutation_index = random.randint(0, len(arguments_list) - 1)
     org_argument = arguments_list[mutation_index]
     new_argument = word_synonym_replacement(arguments_list[mutation_index])
-    # Because word_synonym_replacement only sometimes returns a tuple
-    new_argument_str = new_argument
-    if isinstance(new_argument, tuple):
-        new_argument = new_argument[1]
-        new_argument_str = ' '.join(new_argument)
-
-    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument_str)
+    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument)
     method_string = method_string.replace(arguments_info, new_arguments_info, 1)
     return method_string
 
@@ -497,11 +465,12 @@ def dead_branch_while(data):
             else:
                 break
     new_statement = ''
-    #print(space_count)
+    print(space_count)
     for _ in range(space_count):
         new_statement += ' '
     new_statement += get_branch_while_mutant()
     method_string = data.replace(statement, '\n' + new_statement + '\n' + statement)
+    # print(method_string)
     return method_string
 
 
@@ -564,5 +533,5 @@ if __name__ == '__main__':
         function_list, class_name = extract_function_python(class_name)
     candidate_code = function_list[0]
     mutated_code = apply_plus_zero_math(candidate_code)
-    #print(candidate_code)
-    #print(mutated_code)
+    print(candidate_code)
+    print(mutated_code)
