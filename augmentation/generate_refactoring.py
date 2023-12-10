@@ -165,7 +165,7 @@ def generate_adversarial_json(k, code):
     return refac
 
 
-def generate_adversarial_file_level(k, code):
+def generate_adversarial_file_level(code, refactors_list, k, max_refactor_limit, cumulative, verbose=False):
     """
     Apply k refactoring operations to the entire file-level code, potentially altering the overall structure.
 
@@ -181,33 +181,99 @@ def generate_adversarial_file_level(k, code):
     Returns:
         str: The refactored code at the file level, with each transformation potentially affecting the global scope.
     """
-    new_refactored_code = ''
-    new_rf = code
+    
     new_refactored_code = code
+    refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
+
+    successful_refactorings = 0  # Counter for successful refactorings
+
     for t in range(k):
-        refactors_list = [
-                            rename_argument, 
-                            return_optimal, 
-                            add_argumemts,
-                            rename_api, 
-                            rename_local_variable,
-                            add_local_variable,
-                            rename_method_name,
-                            enhance_if,
-                            add_print,
-                            duplication,
-                            apply_plus_zero_math,
-                            dead_branch_if_else,
-                            dead_branch_if,
-                            dead_branch_while,
-                            dead_branch_for
-                            ]  
+        available_refactors = [rf for rf in refactors_list if cumulative[rf.__name__] < max_refactor_limit]
+
         vv = 0
-        while new_rf == new_refactored_code and vv <= 20:
+        while vv <= 20 and available_refactors and (new_refactored_code == code or successful_refactorings < k):
             try:
                 vv += 1
-                refactor = random.choice(refactors_list)
-                print('*' * 50, refactor, '*' * 50)
+                refactor = random.choice(available_refactors)
+                if verbose:
+                    print('*' * 50, refactor.__name__, '*' * 50)
+                updated_code = refactor(new_refactored_code)
+                if updated_code != new_refactored_code:
+                    successful_refactorings += 1
+                    new_refactored_code = updated_code
+                    refactoring_counts[refactor.__name__] += 1
+                    cumulative[refactor.__name__] += 1
+                    if successful_refactorings >= k:
+                        break
+            except Exception as error:
+                if verbose:
+                    print(f'Error applying {refactor.__name__}:\t{error}')
+
+                # Prepare a shuffled list of alternative refactors
+                alternatives = [rf for rf in available_refactors if rf != refactor]
+                random.shuffle(alternatives)
+                for alternative_refactor in alternatives:
+                    try:
+                        updated_code = alternative_refactor(new_refactored_code)
+                        if updated_code != new_refactored_code:
+                            successful_refactorings += 1
+                            new_refactored_code = updated_code
+                            refactoring_counts[alternative_refactor.__name__] += 1
+                            cumulative[alternative_refactor.__name__] += 1
+                            if successful_refactorings >= k:
+                                break
+                            if verbose:
+                                print(f'Applied alternative {alternative_refactor.__name__}')
+                            break
+                    except Exception as alt_error:
+                        if verbose:
+                            print(f'Error applying alternative {alternative_refactor.__name__}: {alt_error}')
+                        continue
+        if new_refactored_code == code:
+            try:
+                updated_code = insert_safe_random_space(new_refactored_code)
+                if updated_code != new_refactored_code:
+                    successful_refactorings += 1
+                    new_refactored_code = updated_code
+                    refactoring_counts['insert_safe_random_spaces'] += 1
+                    cumulative['insert_safe_random_spaces'] += 1  # Increment even if over limit
+                    if verbose:
+                        print("Applied last resort refactoring: insert_safe_random_spaces")
+            except Exception as last_resort_error:
+                if verbose:
+                    print(f'Error applying last resort refactoring insert_safe_random_spaces: {last_resort_error}')
+
+    return new_refactored_code, refactoring_counts
+
+
+
+def generate_adversarial_file_level_n(code, n, verbose=False):
+    refactors_list = [
+                        rename_argument, 
+                        return_optimal, 
+                        add_argumemts,
+                        rename_api, 
+                        rename_local_variable,
+                        add_local_variable,
+                        rename_method_name,
+                        enhance_if,
+                        add_print,
+                        duplication,
+                        apply_plus_zero_math,
+                        dead_branch_if_else,
+                        dead_branch_if,
+                        dead_branch_while,
+                        dead_branch_for,
+                        insert_safe_random_space,
+                        ]
+
+    new_refactored_code = code
+    refactoring_counts = {refactor.__name__: 0 for refactor in refactors_list}
+
+    for refactor in refactors_list:
+        attempts = 0
+        while attempts < n:
+            try:
                 new_refactored_code = refactor(new_refactored_code)
             except Exception as error:
                 print('error:\t', error)
