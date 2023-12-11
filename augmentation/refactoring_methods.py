@@ -137,7 +137,10 @@ def rename_argument(method_string):
         return method_string
 
     mutation_index = random.randint(0, len(arguments_list) - 1)
-    return method_string.replace(arguments_list[mutation_index], word_synonym_replacement(arguments_list[mutation_index]))
+    new_arg = word_synonym_replacement(arguments_list[mutation_index])
+    if isinstance(new_arg, tuple):
+        new_arg = new_arg[0]
+    return method_string.replace(arguments_list[mutation_index], new_arg)
 
 
 def return_optimal(method_string):
@@ -284,7 +287,13 @@ def add_argumemts(method_string):
     mutation_index = random.randint(0, len(arguments_list) - 1)
     org_argument = arguments_list[mutation_index]
     new_argument = word_synonym_replacement(arguments_list[mutation_index])
-    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument)
+    # Because word_synonym_replacement only sometimes returns a tuple
+    new_argument_str = new_argument
+    if isinstance(new_argument, tuple):
+        new_argument = new_argument[1]
+        new_argument_str = ' '.join(new_argument)
+
+    new_arguments_info = arguments_info.replace(org_argument, org_argument + ', ' + new_argument_str)
     method_string = method_string.replace(arguments_info, new_arguments_info, 1)
     return method_string
 

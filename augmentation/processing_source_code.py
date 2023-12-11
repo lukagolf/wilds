@@ -364,8 +364,8 @@ def hack(source):
     Yields:
         iterator: An iterator over the identifiers found in the source code.
     """
-    root = ast.parse(source)
-
+    formatted_source = preprocess_source(source)
+    root = ast.parse(formatted_source)
     for node in ast.walk(root):
         if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store):
             yield node.id

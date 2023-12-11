@@ -20,7 +20,7 @@ def return_function_code(code, method_names):
     final_names = []
     Class_list, raw_code = extract_class(code)
     for class_name in Class_list:
-        function_list, class_name = extract_function(class_name)
+        function_list, class_name = extract_function_python(class_name)
     for fun_code in function_list:
         for method_name in method_names:
             method_name_tem = method_name.replace('|', '')
@@ -53,7 +53,7 @@ def generate_adversarial(k, code, method_names):
     class_name = ''
     Class_list, raw_code = extract_class(code)
     for class_name in Class_list:
-        function_list, class_name = extract_function(class_name)
+        function_list, class_name = extract_function_python(class_name)
 
     refac = []
     new_refactored_code = ''
@@ -169,17 +169,15 @@ def generate_adversarial_file_level(code, refactors_list, k, max_refactor_limit,
     """
     Apply k refactoring operations to the entire file-level code, potentially altering the overall structure.
 
-    This function applies refactoring transformations to the code at the file level as a whole,
-    without targeting specific methods or classes. It is suitable for broad refactoring that impacts
-    the entire codebase, such as renaming variables used across multiple methods or classes, or
-    adding additional error handling throughout the file.
-
     Args:
         k (int): The number of refactoring methods to apply to the entire code.
         code (str): The source code of the entire file to refactor.
+        verbose (bool): Whether to print detailed information about the refactoring process.
+        max_refactor_limit (int): The maximum limit for each refactoring method.
+        cumulative_refactoring_counts (dict): A dictionary to keep track of the number of times each refactoring method has been applied.
 
     Returns:
-        str: The refactored code at the file level, with each transformation potentially affecting the global scope.
+        tuple: A tuple containing the refactored code at the file level and a dictionary of refactoring counts.
     """
     
     new_refactored_code = code
@@ -275,10 +273,37 @@ def generate_adversarial_file_level_n(code, n, verbose=False):
         while attempts < n:
             try:
                 new_refactored_code = refactor(new_refactored_code)
+                refactoring_counts[refactor.__name__] += 1
+                attempts += 1
             except Exception as error:
-                print('error:\t', error)
-        new_rf = new_refactored_code
-    return new_refactored_code
+                if verbose:
+                    print(f'Error applying {refactor.__name__}: {error}')
+
+                # Prepare a shuffled list of alternative refactors
+                alternatives = [rf for rf in refactors_list if rf != refactor]
+                random.shuffle(alternatives)
+
+                for alternative_refactor in alternatives:
+                    try:
+                        new_refactored_code = alternative_refactor(new_refactored_code)
+                        refactoring_counts[alternative_refactor.__name__] += 1
+                        if verbose:
+                            print(f'Applied alternative {alternative_refactor.__name__}')
+                        break
+                    except Exception as alt_error:
+                        if verbose:
+                            print(f'Error applying alternative {alternative_refactor.__name__}: {alt_error}')
+                        continue
+
+                # Check if any refactoring was successful
+                if refactoring_counts[alternative_refactor.__name__] == 0:
+                    # All alternatives have been tried and failed, return original code
+                    if verbose:
+                        print(f'All alternatives failed for {refactor.__name__}')
+                    return code, refactoring_counts
+                break
+
+    return new_refactored_code, refactoring_counts
 
 
 if __name__ == '__main__':
