@@ -52,7 +52,7 @@ def add_local_variable(method_string):
         return method_string
 
 
-def duplication(method_string):
+def duplication(method_string, verbose=False):
     """
     Duplicates a local variable definition within the method string.
 
@@ -75,10 +75,12 @@ def duplication(method_string):
         var_definition = match_ret.group()[:-1]
         new_var_definition = var_definition
         method_string = method_string.replace(var_definition, var_definition + new_var_definition)
-        # print(method_string)
+        if verbose:
+            print(method_string)
         return method_string
     else:
-        # print(method_string)
+        if verbose:
+            print(method_string)
         return method_string
 
 
@@ -433,7 +435,7 @@ def dead_branch_if(data):
     return method_string
 
 
-def dead_branch_while(data):
+def dead_branch_while(data, verbose=False):
     """
     Introduces a dead branch in while loops within the method string to
     potentially expose logical errors.
@@ -465,12 +467,14 @@ def dead_branch_while(data):
             else:
                 break
     new_statement = ''
-    print(space_count)
+    if verbose:
+        print(space_count)
     for _ in range(space_count):
         new_statement += ' '
     new_statement += get_branch_while_mutant()
     method_string = data.replace(statement, '\n' + new_statement + '\n' + statement)
-    # print(method_string)
+    if verbose:
+        print(method_string)
     return method_string
 
 
