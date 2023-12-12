@@ -1,6 +1,6 @@
 # Installation
 
-**Note:** If you encounter any trouble with the installation, please refer to `README-WILDS` for a detailed installation process, as it outlines all dependencies.
+**Note:** If you encounter any trouble with the installation, please refer to `WILDS-README` for a detailed installation process, as it outlines all dependencies.
 
 To install the dependencies automatically, use:
 
@@ -24,7 +24,11 @@ To sample these subsets or others, ensure you are in the topmost level of the re
 
 ```bash
 python augmentation/sample_data.py --input data --output data24k --sample_size 24000
+```
 
+or
+
+```bash
 python augmentation/sample_data.py --input data --output data1500 --sample_size 1500
 ```
 
@@ -60,7 +64,7 @@ python script/2.prepare_eval_position.py
 
 # Augmentations
 
-We provide two different augmentation strategies: 'mixed' and 'combined'. The difference between these is explained in Section 4.2 of our paper (url: ...).
+We provide two different augmentation strategies: 'mixed' and 'combined'. The difference between these is explained in Section 4.2 of our [paper](https://github.com/lukagolf/wilds/blob/main/enhacing-ood-acc-in-code-completion-via-da.pdf).
 
 ## Mixed Strategy
 
@@ -68,7 +72,10 @@ To run the augmentations with the 'mixed' strategy, ensure you are in the topmos
 
 ```bash
 python augmentation/augment_mixed_file.py --data_dir data24k --aug_dir data24k-aug -s 24000 -k 1 logs/logs24k/mixed/all-1
+```
+or
 
+```bash
 python augmentation/augment_mixed_file.py --data_dir data1500 --aug_dir data1500-aug -s 1500 -k 1 logs/logs1500/mixed/all-1
 ```
 
@@ -84,7 +91,10 @@ To run the augmentations with the 'combined' strategy, ensure you are in the top
 
 ```bash
 python augmentation/augment_combined_file.py --data_dir data24k --aug_dir data24k-aug -s 24000 -k 1 logs/logs24k/combined/all-1
+```
+or
 
+```bash
 python augmentation/augment_combined_file.py --data_dir data1500 --aug_dir data1500-aug -s 1500 -k 1 logs/logs1500/combined/all-1
 ```
 
@@ -128,7 +138,10 @@ Now, you are ready to run the control dataset. Ensure you are in the topmost lev
 
 ```bash
 python examples/run_expt.py --root_dir data24k --log_dir logs/logs24k/control --dataset py150 --algorithm ERM --seed 0 --lr 8e-5 --weight_decay 0
+```
+or
 
+```bash
 python examples/run_expt.py --root_dir data1500 --log_dir logs/logs1500/control --dataset py150 --algorithm ERM --seed 0 --lr 8e-5 --weight_decay 0
 ```
 
@@ -146,7 +159,10 @@ Now, you are ready to run the augmented dataset. Ensure you are in the topmost l
 
 ```bash
 python examples/run_expt.py --root_dir data24k-aug --log_dir logs/logs24k/mixed/all-1 --dataset py150 --algorithm ERM --seed 0 --lr 8e-5 --weight_decay 0
+```
+or
 
+```bash
 python examples/run_expt.py --root_dir data1500-aug --log_dir logs/logs1500/combined/all-1 --dataset py150 --algorithm ERM --seed 0 --lr 8e-5 --weight_decay 0
 ```
 
