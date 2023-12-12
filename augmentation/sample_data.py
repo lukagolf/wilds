@@ -1,11 +1,19 @@
 import random
 import os
 import shutil
+import argparse
+
+# Set up command line argument parsing
+parser = argparse.ArgumentParser(description='Sample data from datasets.')
+parser.add_argument('--input', type=str, required=True, help='Input directory')
+parser.add_argument('--output', type=str, required=True, help='Output directory')
+parser.add_argument('--sample_size', type=int, required=True, help='Sample size for the data')
+args = parser.parse_args()
 
 # Constants for input and output directories, and the sample size for the data
-INPUT = 'data'
-OUTPUT = 'data24k'
-SAMPLE_SIZE = 24000
+INPUT = args.input
+OUTPUT = args.output
+SAMPLE_SIZE = args.sample_size
 
 def calculate_sample_sizes(train_sample_size, proportions):
     """
@@ -88,6 +96,32 @@ def sample_snippets(sample_size, raw_file_path, meta_file_path, output_raw_path,
         os.remove(release_file_dest)
     shutil.copy(f'{INPUT}/py150_v1.0/RELEASE_v1.0.txt', release_file_dest)
 
+def create_processed_directory_and_files(output_base):
+    '''
+    Creates the processed directory and empty JSON files for the py150 dataset.
+    
+    :param output_base: The base directory for the output files.
+    '''
+    processed_dir = os.path.join(output_base, 'py150_v1.0', 'processed')
+    os.makedirs(processed_dir, exist_ok=True)
+
+    files_to_create = [
+        'IDtest_input_tok_type.json',
+        'IDtest_input.json',
+        'IDval_input_tok_type.json',
+        'IDval_input.json',
+        'OODtest_input_tok_type.json',
+        'OODtest_input.json',
+        'OODval_input_tok_type.json',
+        'OODval_input.json',
+        'train_input_tok_type.json',
+        'train_input.json'
+    ]
+
+    for file_name in files_to_create:
+        with open(os.path.join(processed_dir, file_name), 'w') as f:
+            f.write('')  # Create an empty file
+
 # Define file paths and proportions for different datasets
 proportions = {
     'OODval': 3.44,
@@ -121,3 +155,5 @@ sample_snippets(
     other_datasets_paths=other_datasets_paths,
     other_metadata_paths=other_metadata_paths
 )
+
+create_processed_directory_and_files(OUTPUT)
