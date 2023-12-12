@@ -1,3 +1,7 @@
+# Findings
+
+To read on our findings, please read our [paper](https://github.com/lukagolf/wilds/blob/main/enhacing-ood-acc-in-code-completion-via-da.pdf).
+
 # Installation
 
 **Note:** If you encounter any trouble with the installation, please refer to `WILDS-README` for a detailed installation process, as it outlines all dependencies.
