@@ -1,0 +1,316 @@
+Dataset: py150
+Algorithm: ERM
+Root dir: data1500-aug
+Split scheme: official
+Dataset kwargs: {}
+Download: False
+Frac: 1.0
+Version: None
+Unlabeled split: None
+Unlabeled version: None
+Use unlabeled y: False
+Loader kwargs: {'num_workers': 4, 'pin_memory': True}
+Unlabeled loader kwargs: {'num_workers': 8, 'pin_memory': True}
+Train loader: standard
+Uniform over groups: False
+Distinct groups: None
+N groups per batch: 2
+Unlabeled n groups per batch: None
+Batch size: 6
+Unlabeled batch size: None
+Eval loader: standard
+Gradient accumulation steps: 1
+Model: code-gpt-py
+Model kwargs: {}
+Noisystudent add dropout: None
+Noisystudent dropout rate: None
+Pretrained model path: None
+Load featurizer only: False
+Teacher model path: None
+Transform: None
+Additional train transform: None
+Target resolution: None
+Resize scale: None
+Max token length: None
+Randaugment n: 2
+Loss function: lm_cross_entropy
+Loss kwargs: {}
+Groupby fields: ['repo']
+Group dro step size: None
+Coral penalty weight: 1.0
+Dann penalty weight: None
+Dann classifier lr: None
+Dann featurizer lr: None
+Dann discriminator lr: None
+Afn penalty weight: None
+Safn delta r: None
+Hafn r: None
+Use hafn: False
+Irm lambda: 1.0
+Irm penalty anneal iters: None
+Self training lambda: None
+Self training threshold: None
+Pseudolabel t2: None
+Soft pseudolabels: False
+Algo log metric: multitask_accuracy
+Process pseudolabels function: None
+Val metric: acc
+Val metric decreasing: False
+N epochs: 3
+Optimizer: AdamW
+Lr: 8e-05
+Weight decay: 0.0
+Max grad norm: 1.0
+Optimizer kwargs: {'eps': 1e-08}
+Scheduler: linear_schedule_with_warmup
+Scheduler kwargs: {'num_warmup_steps': 0}
+Scheduler metric split: val
+Scheduler metric name: None
+Process outputs function: multiclass_logits_to_pred
+Evaluate all splits: True
+Eval splits: []
+Eval only: False
+Eval epoch: None
+Device: cuda
+Seed: 0
+Log dir: logs/melanie/logs1500/combined/all-1-per-enh
+Log every: 50
+Save step: None
+Save best: True
+Save last: True
+Save pred: True
+No group logging: True
+Progress bar: False
+Resume: False
+Use wandb: False
+Wandb api key path: None
+Wandb kwargs: {}
+Use data parallel: False
+
+Train data...
+    n = 3000
+Validation (OOD) data...
+    n = 110
+Test (OOD) data...
+    n = 855
+Validation (ID) data...
+    n = 107
+Test (ID) data...
+    n = 428
+
+Epoch [0]:
+
+Train:
+objective: 2.476
+loss_all: 2.476
+acc_all: 0.551
+
+objective: 2.083
+loss_all: 2.083
+acc_all: 0.607
+
+objective: 1.990
+loss_all: 1.990
+acc_all: 0.622
+
+objective: 1.882
+loss_all: 1.882
+acc_all: 0.640
+
+objective: 1.782
+loss_all: 1.782
+acc_all: 0.650
+
+objective: 1.813
+loss_all: 1.813
+acc_all: 0.648
+
+objective: 1.744
+loss_all: 1.744
+acc_all: 0.658
+
+objective: 1.652
+loss_all: 1.652
+acc_all: 0.671
+
+objective: 1.652
+loss_all: 1.652
+acc_all: 0.669
+
+objective: 1.553
+loss_all: 1.553
+acc_all: 0.686
+
+Epoch eval:
+Acc (Class-Method): 0.616
+Acc (Overall): 0.640
+Acc (class): 0.614
+Acc (method): 0.618
+Acc (punctuation): 0.830
+Acc (keyword): 0.639
+Acc (builtin): 0.679
+Acc (literal): 0.595
+Acc (other_identifier): 0.492
+
+Validation (OOD):
+objective: 1.991
+loss_all: 1.991
+acc_all: 0.634
+
+Epoch eval:
+Acc (Class-Method): 0.612
+Acc (Overall): 0.633
+Acc (class): 0.636
+Acc (method): 0.579
+Acc (punctuation): 0.828
+Acc (keyword): 0.635
+Acc (builtin): 0.682
+Acc (literal): 0.569
+Acc (other_identifier): 0.477
+Validation acc: 0.612
+Epoch 0 has the best validation performance so far.
+
+
+Epoch [1]:
+
+Train:
+objective: 1.229
+loss_all: 1.229
+acc_all: 0.732
+
+objective: 1.204
+loss_all: 1.204
+acc_all: 0.737
+
+objective: 1.217
+loss_all: 1.217
+acc_all: 0.735
+
+objective: 1.173
+loss_all: 1.173
+acc_all: 0.743
+
+objective: 1.159
+loss_all: 1.159
+acc_all: 0.745
+
+objective: 1.113
+loss_all: 1.113
+acc_all: 0.754
+
+objective: 1.101
+loss_all: 1.101
+acc_all: 0.758
+
+objective: 1.092
+loss_all: 1.092
+acc_all: 0.756
+
+objective: 1.061
+loss_all: 1.061
+acc_all: 0.762
+
+objective: 1.037
+loss_all: 1.037
+acc_all: 0.766
+
+Epoch eval:
+Acc (Class-Method): 0.755
+Acc (Overall): 0.748
+Acc (class): 0.735
+Acc (method): 0.779
+Acc (punctuation): 0.903
+Acc (keyword): 0.709
+Acc (builtin): 0.776
+Acc (literal): 0.725
+Acc (other_identifier): 0.627
+
+Validation (OOD):
+objective: 2.202
+loss_all: 2.202
+acc_all: 0.626
+
+Epoch eval:
+Acc (Class-Method): 0.588
+Acc (Overall): 0.625
+Acc (class): 0.596
+Acc (method): 0.578
+Acc (punctuation): 0.824
+Acc (keyword): 0.635
+Acc (builtin): 0.677
+Acc (literal): 0.557
+Acc (other_identifier): 0.469
+Validation acc: 0.588
+
+
+Epoch [2]:
+
+Train:
+objective: 0.811
+loss_all: 0.811
+acc_all: 0.810
+
+objective: 0.815
+loss_all: 0.815
+acc_all: 0.809
+
+objective: 0.797
+loss_all: 0.797
+acc_all: 0.810
+
+objective: 0.794
+loss_all: 0.794
+acc_all: 0.814
+
+objective: 0.797
+loss_all: 0.797
+acc_all: 0.811
+
+objective: 0.838
+loss_all: 0.838
+acc_all: 0.804
+
+objective: 0.804
+loss_all: 0.804
+acc_all: 0.809
+
+objective: 0.778
+loss_all: 0.778
+acc_all: 0.815
+
+objective: 0.750
+loss_all: 0.750
+acc_all: 0.823
+
+objective: 0.780
+loss_all: 0.780
+acc_all: 0.813
+
+Epoch eval:
+Acc (Class-Method): 0.826
+Acc (Overall): 0.812
+Acc (class): 0.795
+Acc (method): 0.862
+Acc (punctuation): 0.937
+Acc (keyword): 0.751
+Acc (builtin): 0.836
+Acc (literal): 0.808
+Acc (other_identifier): 0.715
+
+Validation (OOD):
+objective: 2.335
+loss_all: 2.335
+acc_all: 0.623
+
+Epoch eval:
+Acc (Class-Method): 0.580
+Acc (Overall): 0.623
+Acc (class): 0.586
+Acc (method): 0.572
+Acc (punctuation): 0.830
+Acc (keyword): 0.625
+Acc (builtin): 0.680
+Acc (literal): 0.553
+Acc (other_identifier): 0.464
+Validation acc: 0.580
+
