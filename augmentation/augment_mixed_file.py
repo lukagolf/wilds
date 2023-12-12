@@ -4,11 +4,24 @@ import shutil
 import argparse
 from generate_refactoring import *
 
+# Setup argparse for command-line argument parsing
+parser = argparse.ArgumentParser(
+    description="Run script and redirect output to specified directory"
+)
+
+parser.add_argument("--data_dir", type=str, required=True, help="Directory containing the dataset")
+parser.add_argument("--aug_dir", type=str, required=True, help="Directory for augmented data")
+parser.add_argument("-s", "--size_of_dataset", type=int, required=True, help="Size of the dataset")
+parser.add_argument("-k", "--apply_k_per_snippet", type=int, required=True, help="Number of refactoring applications per snippet")
+parser.add_argument("output_dir", type=str, help="Directory to save the output logs")
+args = parser.parse_args()
+
 # Constants for dataset directories and augmentation settings
-DATA_DIR = "data500"
-AUG_DIR = "data500-aug"
-SIZE_OF_DATASET = 500
-APPLY_K_PER_SNIPPET = 1
+DATA_DIR = args.data_dir
+AUG_DIR = args.aug_dir
+SIZE_OF_DATASET = args.size_of_dataset
+APPLY_K_PER_SNIPPET = args.apply_k_per_snippet
+
 SIZE_TO_AUGMENT = (SIZE_OF_DATASET / 2) * APPLY_K_PER_SNIPPET
 
 # List of refactoring functions to be applied
@@ -52,14 +65,6 @@ def custom_print(*args, **kwargs):
         *args, **kwargs, file=original_stdout
     )  # Print to the original stdout (terminal)
     print(*args, **kwargs, file=log_file)  # Print to the log file
-
-
-# Setup argparse for command-line argument parsing
-parser = argparse.ArgumentParser(
-    description="Run script and redirect output to specified directory"
-)
-parser.add_argument("output_dir", type=str, help="Directory to save the output logs")
-args = parser.parse_args()
 
 # Create the output log directory if it doesn't exist
 output_log_directory = args.output_dir
@@ -207,6 +212,16 @@ datasets_to_copy = {
     f"{DATA_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt": f"{AUG_DIR}/py150_v1.0/metadata/repo_file_names/IDtest.txt",
     f"{DATA_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv": f"{AUG_DIR}/py150_v1.0/metadata/repo_file_names/repo_ids.csv",
     f"{DATA_DIR}/py150_v1.0/metadata/repo_file_names/train.txt": f"{AUG_DIR}/py150_v1.0/metadata/repo_file_names/train.txt",
+    f"{DATA_DIR}/py150_v1.0/processed/IDtest_input_tok_type.json": f"{AUG_DIR}/py150_v1.0/processed/IDtest_input_tok_type.json",
+    f"{DATA_DIR}/py150_v1.0/processed/IDtest_input.json": f"{AUG_DIR}/py150_v1.0/processed/IDtest_input.json",
+    f"{DATA_DIR}/py150_v1.0/processed/IDval_input_tok_type.json": f"{AUG_DIR}/py150_v1.0/processed/IDval_input_tok_type.json",
+    f"{DATA_DIR}/py150_v1.0/processed/IDval_input.json": f"{AUG_DIR}/py150_v1.0/processed/IDval_input.json",
+    f"{DATA_DIR}/py150_v1.0/processed/OODtest_input_tok_type.json": f"{AUG_DIR}/py150_v1.0/processed/OODtest_input_tok_type.json",
+    f"{DATA_DIR}/py150_v1.0/processed/OODtest_input.json": f"{AUG_DIR}/py150_v1.0/processed/OODtest_input.json",
+    f"{DATA_DIR}/py150_v1.0/processed/OODval_input_tok_type.json": f"{AUG_DIR}/py150_v1.0/processed/OODval_input_tok_type.json",
+    f"{DATA_DIR}/py150_v1.0/processed/OODval_input.json": f"{AUG_DIR}/py150_v1.0/processed/OODval_input.json",
+    f"{DATA_DIR}/py150_v1.0/processed/train_input_tok_type.json": f"{AUG_DIR}/py150_v1.0/processed/train_input_tok_type.json",
+    f"{DATA_DIR}/py150_v1.0/processed/train_input.json": f"{AUG_DIR}/py150_v1.0/processed/train_input.json",
     f"{DATA_DIR}/py150_v1.0/script": f"{AUG_DIR}/py150_v1.0/script",
     f"{DATA_DIR}/py150_v1.0/RELEASE_v1.0.txt": f"{AUG_DIR}/py150_v1.0/RELEASE_v1.0.txt",
 }
