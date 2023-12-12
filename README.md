@@ -36,6 +36,9 @@ python augmentation/sample_data.py -h
 
 **Note:** If you wish to run the augmentations on the full `py150`, you can skip the Setup section.
 
+The precise versions of `data24k` and `data1500`used by the authors are not uploaded to the repository due to their large size.
+For access to these datasets, you may contact the authors at becker.mel@northeastern.edu or jovanovic.l@northeastern.edu.
+
 # Processing the Sampled Dataset
 
 After sampling your dataset, it needs to be processed. Follow these steps:
@@ -134,7 +137,7 @@ python examples/run_expt.py --root_dir data1500 --log_dir logs/logs1500/control 
 
 Once `run_expt.py` has finished running, your results will be stored in the specified `log_dir`, within a file named `log.txt`. The results will also be printed on the terminal, indicating successful completion. 
 
-For clarification on command line arguments, run:
+These command-line arguments run the model using the same parameters reported in the larger WILDS project. For clarification on what the arguments mean, run:
 
 ```bash
 python examples/run_expt.py -h
@@ -157,3 +160,13 @@ For clarification on command line arguments, run:
 ```bash
 python examples/run_expt.py -h
 ```
+
+## Comparing experimental results
+
+We offer a script for comparing the results of two experiments. To use it, edit the filepaths at the top of `logs/eval-results.py` to point to the directories containing the log.txt files for experiments you wish to compare. Then, ensure you are in the topmost level of the repository (`path/to/wilds`) and execute:
+
+```bash
+python logs/eval_results.py
+```
+
+This script outputs a comparison of both experiments for every category in every epoch, including the numerical difference between the experiments' accuracies for the category. In addition, it indicates which experiment performed better in the larger number of categories for every epoch.
