@@ -177,7 +177,7 @@ For clarification on command line arguments, run:
 python examples/run_expt.py -h
 ```
 
-## Comparing experimental results
+## Comparing Experimental Results
 
 We offer a script for comparing the results of two experiments. To use it, edit the filepaths at the top of `logs/eval-results.py` to point to the directories containing the log.txt files for experiments you wish to compare. Then, ensure you are in the topmost level of the repository (`path/to/wilds`) and execute:
 
